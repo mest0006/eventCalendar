@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events Calendar</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+</head>
+
+<body>
+  <div id="app">
+    <div class="top">
+      <h1 class="h1"> {{months[selected.month]}} {{ selected.year}}</h1>
+      <a type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#myModal1">
+        add
+      </a>
+      <select v-model="selected.month">
+        <option v-for="(month,index) in months" :key="index" :value="index">
+          {{month}}
+
+        </option>
+      </select>
+      <select v-model="selected.year">
+        <option v-for="(year,index) in years" :key="index" :value="year">
+          {{year}}
+        </option>
+      </select>
+
+    </div>
+
+    <div class="calendar">
+      <div>Sun</div>
+      <div>Mon</div>
+      <div>Tue</div>
+      <div>Wed</div>
+      <div>Thu</div>
+      <div>Fri</div>
+      <div>Sat</div>
+      <div v-for="n in startDay"> </div>
+      <day v-for="day in daysInMonth" :day="day" :month="selected.month" :year="selected.year">
+      </day>
+
+      <div class="modal fade" id="myModal1" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Modal Header</h4>
+            </div>
+            <div class="modal-body">
+
+              <form>
+
+                <div v-for="(event,value) in events " class="form-group">
+
+                  <input class=" form-control" v-model="event.time">
+
+                  <input class=" form-control" v-model="event.details">
+                  <input class=" form-control" v-model="event.day">
+                </div>
+
+
+
+
+                <button type="submit" @click="add" class="btn btn-primary">add </button>
+
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Modal Header</h4>
+            </div>
+            <div class="modal-body">
+
+              <form>
+
+                <div v-for="(event,value) in events " class="form-group">
+
+                  <input class=" form-control" v-model="event.time">
+
+                  <input class=" form-control" v-model="event.details">
+                  <input class=" form-control" v-model="event.day">
+                </div>
+
+
+
+
+                <button type="submit" @click="" class="btn btn-primary">Update </button>
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+
+
+
+  </div>
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    Vue.component('day', {
+
+      props: ['day', 'month', 'year'],
+
+
+      computed: {
+
+        events: function () {
+          return this.$root.events.filter(event => {
+            return event.day === this.day &&
+              event.month === this.month &&
+              event.year === this.years
+
+          })
+        },
+
+
+      },
+      methods: {
+        currentDay: function () {
+          const d = new Date()
+          const now = d.getDate()
+          return now
+
+        }
+      },
+
+
+      template: `
+
+
+   
+
+        <div class="border"> 
+          <div class="day"  >  {{ day }}</strong>
+            <a type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#myModal" v-for="event in events" >  {{event.time}} <br>{{event.text}}
+         </a>
+        
+        </div>
+
+
+       
+          </div>
+
+    
+`
+    })
+    var app = new Vue({
+      el: '#app',
+      data: {
+
+        added: '',
+        months: ['January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September ', 'October', 'November', 'December '
+        ],
+        years: [2020, 2021, 2022, 2023, 2024, 2025],
+
+
+        selected: {
+          month: 0,
+
+          year: 2020
+        },
+        events: [{
+            text: 'Job interview',
+            day: 9,
+            month: 0,
+            time: '12:30pm',
+            details: 'Zoom'
+          },
+          {
+            text: 'Meeting',
+            day: 10,
+            month: 0,
+            time: '12:30pm',
+            details: 'Zoom'
+          },
+          {
+            text: 'Assignment Due',
+            day: 16,
+            month: 0,
+            time: '12:15pm',
+            details: 'Midterm '
+          }
+
+        ]
+      },
+
+      mounted: function () {
+
+        const ls = localStorage.getItem('storageKey')
+        if (ls) {
+          const storageKey = JSON.parse('ls')
+          this.events = storageKey.events
+        }
+
+      },
+      computed: {
+
+
+
+
+
+
+        daysInMonth: function () {
+          const date = new Date(this.selected.year, this.selected.month + 1, 0).getDate()
+          return date
+        },
+
+        startDay: function () {
+          const day = new Date(this.selected.year, this.selected.month, 1).getDay()
+          return day
+        },
+
+
+        e: function () {
+          return this.events.filter(event => {
+            return
+
+            event.day === this.events.time
+
+          })
+        },
+
+
+      },
+      methods: {
+
+
+        add: function () {
+
+          this.events.push({
+
+              text: 'Assignment Due',
+              day: 18,
+              month: 0,
+              time: '12:15pm',
+              details: 'Midterm '
+
+            }),
+
+            localStorage.setItem('storageKey', JSON.stringify(this.events))
+
+
+        },
+
+        deleteItem: function (index) {
+          this.events.splice(this.list.indexOf(index), 1)
+
+        },
+
+
+      },
+
+
+
+    })
+  </script>
+
+
+
+</body>
+
+</html>

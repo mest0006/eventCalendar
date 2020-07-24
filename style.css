@@ -1,0 +1,35 @@
+.calendar {
+
+  display: grid;
+  grid-template-columns: repeat(7, 150px);
+  grid-template-rows: repeat(5, 150px);
+  justify-items: center;
+  justify-content: center;
+}
+
+.day {
+  display: grid;
+  justify-items: center;
+  margin: 1rem;
+  padding: 1rem;
+
+
+}
+
+h1 {
+  text-align: right;
+}
+
+.border {
+
+  width: 150px;
+  height: 150px;
+  border: 1px silver solid;
+}
+
+.btn .btn-info .btn-sm {
+  font-size: 8px;
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+}
