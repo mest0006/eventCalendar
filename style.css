@@ -1,4 +1,19 @@
+#app {
+  margin: 2rem;
+}
+
+.show {
+  top: 100px;
+  display: flex;
+  opacity: 1;
+  visibility: visible;
+  overflow: visible;
+}
+
+
+
 .calendar {
+
 
   display: grid;
   grid-template-columns: repeat(7, 150px);

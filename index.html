@@ -44,69 +44,59 @@
       <div>Sat</div>
       <div v-for="n in startDay"> </div>
       <day v-for="day in daysInMonth" :day="day" :month="selected.month" :year="selected.year">
+
       </day>
 
-      <div class="modal fade" id="myModal1" role="dialog">
-        <div class="modal-dialog modal-sm">
+      <div class="modal fade" id="myModal1" role="dialog" :class="{show: modal}">
+        <div class=" modal-dialog modal-sm">
           <div class="modal-content">
             <div class="modal-header">
-
               <button type="button" class="close" data-dismiss="modal">&times;</button>
               <h4 class="modal-title">Modal Header</h4>
             </div>
             <div class="modal-body">
+              <form @submit.prevent="add">
+                <div class="form-group">
 
-              <form>
-
-                <div v-for="(event,value) in events " class="form-group">
-
-                  <input class=" form-control" v-model="event.time">
-
-                  <input class=" form-control" v-model="event.details">
-                  <input class=" form-control" v-model="event.day">
+                  <input type="text" class=" form-control" v-model="added">
+                  <input type="datetime" class=" form-control" v-model="update">
                 </div>
-
-
-
-
-                <button type="submit" @click="add" class="btn btn-primary">add </button>
-
+                <button type="submit" class="btn btn-primary">add </button>
               </form>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
+
           </div>
         </div>
       </div>
 
 
-      <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal fade" id="myModal" role="dialog" :class="{show: modal}">
         <div class="modal-dialog modal-sm">
           <div class="modal-content">
             <div class="modal-header">
 
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Modal Header</h4>
+
             </div>
             <div class="modal-body">
 
-              <form>
+              <form method="GET" @submit.prevent="update">
 
-                <div v-for="(event,value) in events " class="form-group">
+                <div class="form-group">
 
-                  <input class=" form-control" v-model="event.time">
+                  <input type="text" class=" form-control" v-model="events.text">
+                  <input type="text" class=" form-control" v-model="events.time">
+                  <input type="text" class=" form-control" v-model="events.details">
 
-                  <input class=" form-control" v-model="event.details">
-                  <input class=" form-control" v-model="event.day">
                 </div>
 
 
 
 
-                <button type="submit" @click="" class="btn btn-primary">Update </button>
-                <button type="submit" class="btn btn-danger">Delete</button>
+                <button type="submit" class="btn btn-primary">Update </button>
+
               </form>
+              <button type="submit" @click="deleteItem" class="btn btn-danger">Delete</button>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -143,18 +133,15 @@
               event.year === this.years
 
           })
+
         },
 
 
-      },
-      methods: {
-        currentDay: function () {
-          const d = new Date()
-          const now = d.getDate()
-          return now
 
-        }
+
+
       },
+
 
 
       template: `
@@ -163,8 +150,10 @@
    
 
         <div class="border"> 
-          <div class="day"  >  {{ day }}</strong>
-            <a type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#myModal" v-for="event in events" >  {{event.time}} <br>{{event.text}}
+          <div class="day" :class="{today: isToday}" >  {{ day }}
+            <a id="added" type="button" class="btn btn-info btn-xs" v-for="event in events" @click="editEvent(event)" > 
+             {{event.time}} <br>{{event.text}} <br> {{event.details}}
+             {{added}}{{update}}
          </a>
         
         </div>
@@ -174,12 +163,20 @@
           </div>
 
     
-`
+`,
+      data() {
+        return {
+          update: '',
+          added: '',
+        }
+      }
     })
     var app = new Vue({
       el: '#app',
       data: {
-
+        modal: false,
+        event: {},
+        update: '',
         added: '',
         months: ['January', 'February', 'March', 'April', 'May', 'June',
           'July', 'August', 'September ', 'October', 'November', 'December '
@@ -188,49 +185,66 @@
 
 
         selected: {
-          month: 0,
+          month: new Date().getMonth(),
 
-          year: 2020
+          year: new Date().getFullYear()
         },
+
+
+
+
+
         events: [{
             text: 'Job interview',
             day: 9,
-            month: 0,
+            month: 6,
             time: '12:30pm',
-            details: 'Zoom'
+            details: 'Zoom',
+
           },
           {
             text: 'Meeting',
             day: 10,
-            month: 0,
+            month: 6,
             time: '12:30pm',
-            details: 'Zoom'
+            details: 'Zoom',
+
           },
           {
             text: 'Assignment Due',
             day: 16,
-            month: 0,
+            month: 6,
             time: '12:15pm',
-            details: 'Midterm '
+            details: 'Midterm ',
+
           }
 
-        ]
+        ],
+
       },
 
       mounted: function () {
 
-        const ls = localStorage.getItem('storageKey')
-        if (ls) {
-          const storageKey = JSON.parse('ls')
-          this.events = storageKey.events
-        }
+        // const ls = localStorage.getItem('storageKey')
+        // if (ls) {
+        //   const storageKey = JSON.parse('ls')
+        //   this.events = storageKey.events
+        // }
 
       },
       computed: {
 
 
 
-
+        isToday: function () {
+          const d = new Date()
+          d.getDate() // 29
+          d.getMonth() // 6 *Remember months start with 0
+          d.getFullYear() // 2020
+          return this.day === d.getDate() &&
+            this.month === d.getMonth() &&
+            this.year === d.getFullYear()
+        },
 
 
         daysInMonth: function () {
@@ -244,29 +258,31 @@
         },
 
 
-        e: function () {
+        eventsToday: function () {
           return this.events.filter(event => {
-            return
-
-            event.day === this.events.time
-
+            return event.this.date.getDate() === this.day &&
+              event.this.date.getMonth() === this.month &&
+              event.this.date.getFullYear() === this.year
           })
+
         },
+
+
+
 
 
       },
       methods: {
-
-
         add: function () {
 
-          this.events.push({
 
-              text: 'Assignment Due',
-              day: 18,
-              month: 0,
-              time: '12:15pm',
-              details: 'Midterm '
+          this.events.push({
+              text: this.added,
+              day: new Date(this.selected.year, this.selected.month, ).getDay(),
+              month: new Date(this.selected.year, this.selected.month, ).getMonth(),
+              time: this.update,
+              details: this.added,
+
 
             }),
 
@@ -275,14 +291,26 @@
 
         },
 
+
         deleteItem: function (index) {
-          this.events.splice(this.list.indexOf(index), 1)
+          this.events.splice(this.events.indexOf(index), 1)
+          localStorage.setItem('storageKey', JSON.stringify(this.events))
 
         },
 
+        updateItem: function (index) {
 
-      },
+          localStorage.setItem('storageKey', JSON.stringify(this.events))
 
+        },
+
+        editEvent: function (event) {
+          this.$root.event = {
+            ...event
+          }
+          this.$root.modal = true
+        }
+      }
 
 
     })
